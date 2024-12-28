@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Helmet from "../components/Helmet/Helmet";
 import CommonSection from "../components/UI/CommonSection";
 import { Col, Container, Row } from "reactstrap";
-import { useParams,useNavigate} from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import products from "../assets/data/products";
 import "../styles/product-details.css";
 import { motion } from "framer-motion";
@@ -12,14 +12,21 @@ import { cartActions } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import axiosClient from "../axios-client";
 
-import pimg from "../assets/images/arm-chair-02.jpg"
-import Carousel from 'react-multi-carousel';
+import pimg from "../assets/images/arm-chair-02.jpg";
+import Carousel from "react-multi-carousel";
 import { getCurrencydata } from "../redux/slices/settingSlice";
 
-import { AiFillMinusCircle, AiFillPlusCircle,AiOutlineShoppingCart,AiOutlineShopping,AiFillFacebook,AiFillTwitterSquare,AiOutlineWhatsApp} from "react-icons/ai";
+import {
+  AiFillMinusCircle,
+  AiFillPlusCircle,
+  AiOutlineShoppingCart,
+  AiOutlineShopping,
+  AiFillFacebook,
+  AiFillTwitterSquare,
+  AiOutlineWhatsApp,
+} from "react-icons/ai";
 
 import ProductDetailsCart from "../components/UI/ProductDetailsCart";
-
 
 const ProductDetails = () => {
   const [tab, setTab] = useState("desc");
@@ -28,21 +35,21 @@ const ProductDetails = () => {
   const dispatch = useDispatch("");
   const [rating, setRating] = useState(null);
   const { id } = useParams();
-  const [productId,setProductId]=useState(id)
+  const [productId, setProductId] = useState(id);
   // setProductId(id)
   let [productDetals, setProductDetails] = useState([]);
   let [productDiscount, setProductDiscount] = useState(0);
   let [relatedProducts, setRelatedProducts] = useState([]);
   let [productImg, setProductImages] = useState([]);
-  let [productmainImg, setProductMainImages] = useState('');
-  let [showImg, setshowImg] = useState('');
+  let [productmainImg, setProductMainImages] = useState("");
+  let [showImg, setshowImg] = useState("");
   let [color, setColor] = useState(false);
   let [size, setSize] = useState(false);
 
-  let [choose_color, setchoose_color] = useState('');
-  let [choose_size, setchoose_size] = useState('');
-  const currencySymbol = useSelector(state => state.setting.currency);
-  const navigate=useNavigate();
+  let [choose_color, setchoose_color] = useState("");
+  let [choose_size, setchoose_size] = useState("");
+  const currencySymbol = useSelector((state) => state.setting.currency);
+  const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -53,38 +60,70 @@ const ProductDetails = () => {
       text: reviewUserMsg,
       rating,
     };
-    console.log(reviwObj);
+    console.log("datareview", reviwObj);
     toast.success("Send Your Reviews");
   };
- 
+
   useEffect(() => {
-    setProductId(id)
-    changedata(id)
+    setProductId(id);
+    changedata(id);
     window.scrollTo(0, 0);
-    setColor(false)
-    setSize(false)
+    setColor(false);
+    setSize(false);
     dispatch(getCurrencydata());
-  },[id]);
+  }, [id]);
 
-
-  function changedata(id){
-    setProductId(id)
+  function changedata(id) {
+    setProductId(id);
   }
 
   useEffect(() => {
     dispatch(getCurrencydata());
-    axiosClient
-      .get(`home/subcategory/product?subCategory_id=1`)
-      .then(({ data }) => {
-        setRelatedProducts(data.data)
-      });
-  }, []);
+    fetchProductDetails(id);
+    fetchRelatedProducts();
+  }, [id]);
 
+  const fetchProductDetails = async (id) => {
+    try {
+      const { data } = await axiosClient.get(`product/details?id=${id}`);
+      console.log("data", data);
+      setProductDetails(data);
+      setProductMainImages(data.image_path);
+      setshowImg(data.image_path);
+      setProductImages(data.product_image);
+      setProductDiscount(data.discount);
+      if (data.color) setColor(data.color.split(","));
+      if (data.size) setSize(data.size.split(","));
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
+  const fetchRelatedProducts = async () => {
+    try {
+      const { data } = await axiosClient.get(
+        `home/subcategory/product?subCategory_id=1`
+      );
+      setRelatedProducts(data.data);
+    } catch (error) {
+      console.error("Error fetching related products:", error);
+    }
+  };
 
   return (
     <Helmet title={productDetals.name}>
-
-      <ProductDetailsCart id={id}/>
+      {productDetals && (
+        <ProductDetailsCart
+          productDetals={productDetals}
+          productDiscount={productDiscount}
+          productImg={productImg}
+          productmainImg={productmainImg}
+          showImg={showImg}
+          color={color}
+          size={size}
+          currencySymbol={currencySymbol}
+        />
+      )}
 
       <section className=" mb-4 pt-3">
         <Container>
@@ -113,13 +152,11 @@ const ProductDetails = () => {
                   <div className="product_reviw mt-5">
                     <div className="review__wrapper">
                       <ul>
-
                         <li key={1} className="mb-4">
                           <h6>Syed Mahadi Hasan Opu </h6>
                           <span>5 (rating) </span>
                           <p> ert edrtert</p>
                         </li>
-
                       </ul>
                       <div className="reviw__form">
                         <h4> Leave Your Exprience </h4>
@@ -138,31 +175,31 @@ const ProductDetails = () => {
                               whileTap={{ scale: 1.2 }}
                               onClick={() => setRating(1)}
                             >
-                              1 <i class="ri-star-s-fill"></i>
+                              1 <i className="ri-star-s-fill"></i>
                             </motion.span>
                             <motion.span
                               whileTap={{ scale: 1.2 }}
                               onClick={() => setRating(2)}
                             >
-                              2 <i class="ri-star-s-fill"></i>
+                              2 <i className="ri-star-s-fill"></i>
                             </motion.span>
                             <motion.span
                               whileTap={{ scale: 1.2 }}
                               onClick={() => setRating(3)}
                             >
-                              3<i class="ri-star-s-fill"></i>
+                              3<i className="ri-star-s-fill"></i>
                             </motion.span>
                             <motion.span
                               whileTap={{ scale: 1.2 }}
                               onClick={() => setRating(4)}
                             >
-                              4 <i class="ri-star-s-fill"></i>
+                              4 <i className="ri-star-s-fill"></i>
                             </motion.span>
                             <motion.span
                               whileTap={{ scale: 1.2 }}
                               onClick={() => setRating(5)}
                             >
-                              5 <i class="ri-star-s-fill"></i>
+                              5 <i className="ri-star-s-fill"></i>
                             </motion.span>
                           </div>
 
@@ -204,7 +241,6 @@ const ProductDetails = () => {
           </div>
         </Container>
       </section>
-
     </Helmet>
   );
 };

@@ -14,16 +14,15 @@ const Cart = (props) => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const totalAmount = useSelector((state) => state.cart.totalAmount);
   const { orderList } = useStateContext();
-  const isLogin = useSelector((state) => state.user.isLogin)
+  const isLogin = useSelector((state) => state.user.isLogin);
   const navigate = useNavigate();
 
   function checkout() {
     if (isLogin) {
-      props.action(1)
-
+      props.action(1);
     } else {
-      toast.error('Login First')
-      navigate("/login")
+      toast.error("Login First");
+      navigate("/login");
     }
   }
 
@@ -55,14 +54,16 @@ const Cart = (props) => {
             )}
 
             <div>
-              {
-                cartItems.length > 0 ? <button className="buy__btn w-100" onClick={checkout}>
-                <Link to="/checkout"> Checkout</Link>
-              </button> : 
-                <Link to="/" className="w-100"> <button className="buy__btn w-100" > Shop  </button> </Link>
-             
-              }
-              
+              {cartItems.length > 0 ? (
+                <button className="buy__btn w-100" onClick={checkout}>
+                  <Link to="/checkout"> Checkout</Link>
+                </button>
+              ) : (
+                <Link to="/" className="w-100">
+                  {" "}
+                  <button className="buy__btn w-100"> Shop </button>{" "}
+                </Link>
+              )}
 
               {/* <button className="buy__btn w-100 mt-3">
                 <Link to="/shop"> Continue Shopping </Link>
@@ -123,7 +124,7 @@ const Tr = ({ item }) => {
       <td>{item.price} </td>
       <td className="qitemst">
         <div className="itemabtr">
-        <button
+          <button
             className="qt_btn bsewd"
             onClick={() => {
               qtyChange(item.quantity, item.id, "neg");
@@ -131,9 +132,10 @@ const Tr = ({ item }) => {
           >
             -
           </button>
-          <div><input type="number" value={item.quantity} className="qtyinput" /></div>
+          <div>
+            <input type="number" value={item.quantity} className="qtyinput" />
+          </div>
 
-      
           <button
             className="qt_btn  bsewd"
             onClick={() => {
@@ -142,14 +144,13 @@ const Tr = ({ item }) => {
           >
             +
           </button>
-         
         </div>
       </td>
       <td>
         <motion.i
           whileTap={{ scale: 1.2 }}
           onClick={deleteProduct}
-          class="ri-delete-bin-line"
+          className="ri-delete-bin-line"
         ></motion.i>
       </td>
     </tr>
